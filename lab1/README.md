@@ -4,8 +4,7 @@
 
 **Course:** Advanced Networked Systems (SS26)  
 **Deadline:** 17.05.2026 23:59  
-**Points:** 15  
-**Contact:** George Karlos — g.karlos@uni-paderborn.de
+**Points:** 15
 
 ---
 
@@ -41,19 +40,7 @@ The controller handles:
 
 ## Network topology
 
-```
-            Internet host                   Controller
-IP: 192.168.1.123/24       +-------+    127.0.0.1:6653
-Gateway: 192.168.1.1       |  c1   |
-              |            +-------+
-              |
-IP: 10.0.1.2/24   +----+         +----+         +----+   IP: 10.0.2.2/24
-Gateway: 10.0.1.1 | h1 |--[s1]---| s3 |---[s2]--| ser|  Gateway: 10.0.2.1
-                  +----+  Switch |Router| Switch  +----+
-IP: 10.0.1.3/24   | h2 |--------+      |
-Gateway: 10.0.1.1 +----+        | ext |-+
-                                +----+
-```
+![alt text](image.png)
 
 ### Hosts
 
