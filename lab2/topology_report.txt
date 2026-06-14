@@ -1,0 +1,64 @@
+Fat-tree topology generation: sanity-check report
+=======================================================
+
+k = 2
+  Node counts (actual / expected):
+    core switches :    1 /    1  [OK]
+    edge switches :    2 /    2  [OK]
+    agg switches  :    2 /    2  [OK]
+    hosts         :    2 /    2  [OK]
+  Degree checks: switches should have degree 2, hosts degree 1
+    OK: all 5 switches have degree 2, all 2 hosts have degree 1
+  Link counts (actual / expected = k^3/4 = 2):
+    edge-host :    2 /    2  [OK]
+    edge-agg  :    2 /    2  [OK]
+    agg-core  :    2 /    2  [OK]
+  Total links: 6 (expected 6)
+  Overall: PASS
+
+k = 4
+  Node counts (actual / expected):
+    core switches :    4 /    4  [OK]
+    edge switches :    8 /    8  [OK]
+    agg switches  :    8 /    8  [OK]
+    hosts         :   16 /   16  [OK]
+  Degree checks: switches should have degree 4, hosts degree 1
+    OK: all 20 switches have degree 4, all 16 hosts have degree 1
+  Link counts (actual / expected = k^3/4 = 16):
+    edge-host :   16 /   16  [OK]
+    edge-agg  :   16 /   16  [OK]
+    agg-core  :   16 /   16  [OK]
+  Total links: 48 (expected 48)
+  Overall: PASS
+
+k = 6
+  Node counts (actual / expected):
+    core switches :    9 /    9  [OK]
+    edge switches :   18 /   18  [OK]
+    agg switches  :   18 /   18  [OK]
+    hosts         :   54 /   54  [OK]
+  Degree checks: switches should have degree 6, hosts degree 1
+    OK: all 45 switches have degree 6, all 54 hosts have degree 1
+  Link counts (actual / expected = k^3/4 = 54):
+    edge-host :   54 /   54  [OK]
+    edge-agg  :   54 /   54  [OK]
+    agg-core  :   54 /   54  [OK]
+  Total links: 162 (expected 162)
+  Overall: PASS
+
+k = 8
+  Node counts (actual / expected):
+    core switches :   16 /   16  [OK]
+    edge switches :   32 /   32  [OK]
+    agg switches  :   32 /   32  [OK]
+    hosts         :  128 /  128  [OK]
+  Degree checks: switches should have degree 8, hosts degree 1
+    OK: all 80 switches have degree 8, all 128 hosts have degree 1
+  Link counts (actual / expected = k^3/4 = 128):
+    edge-host :  128 /  128  [OK]
+    edge-agg  :  128 /  128  [OK]
+    agg-core  :  128 /  128  [OK]
+  Total links: 384 (expected 384)
+  Overall: PASS
+
+All checks passed: True

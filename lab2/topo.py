@@ -68,4 +68,61 @@ class Fattree:
 
 	def generate(self, num_ports):
 
-		# TODO: code for generating the fat-tree topology
+		k = num_ports
+		if k % 2 != 0:
+			raise ValueError("num_ports (k) must be an even number")
+
+		num_pods = k
+		num_core = (k // 2) ** 2
+		num_agg_per_pod = k // 2
+		num_edge_per_pod = k // 2
+		num_hosts_per_edge = k // 2
+
+		# Core switches are addressed 10.k.j.i, with j, i in [1, k/2]
+		# (j identifies the "row" of the core switch grid, i its "column").
+		core_switches = {}
+		for j in range(1, k // 2 + 1):
+			for i in range(1, k // 2 + 1):
+				core = Node('10.{}.{}.{}'.format(k, j, i), 'core')
+				self.switches.append(core)
+				core_switches[(j, i)] = core
+
+		for pod in range(num_pods):
+
+			# Edge (lower-layer) switches occupy positions [0, k/2 - 1]
+			# within a pod and are addressed 10.pod.switch.1
+			edge_switches = []
+			for s in range(num_edge_per_pod):
+				edge = Node('10.{}.{}.1'.format(pod, s), 'edge')
+				self.switches.append(edge)
+				edge_switches.append(edge)
+
+			# Aggregation (upper-layer) switches occupy positions
+			# [k/2, k - 1] within a pod and are addressed 10.pod.switch.1
+			agg_switches = []
+			for s in range(num_agg_per_pod, k):
+				agg = Node('10.{}.{}.1'.format(pod, s), 'agg')
+				self.switches.append(agg)
+				agg_switches.append(agg)
+
+			# Every edge switch connects to every aggregation switch
+			# within the same pod
+			for edge in edge_switches:
+				for agg in agg_switches:
+					edge.add_edge(agg)
+
+			# Aggregation switch at relative position a (0-indexed) within
+			# its pod connects to core switch (j, a + 1) for every
+			# j in [1, k/2], so that consecutive aggregation switches in a
+			# pod fan out across the k/2 "rows" of core switches.
+			for a, agg in enumerate(agg_switches):
+				for j in range(1, k // 2 + 1):
+					agg.add_edge(core_switches[(j, a + 1)])
+
+			# Each edge switch connects to k/2 hosts, addressed
+			# 10.pod.switch.ID with ID in [2, k/2 + 1]
+			for s, edge in enumerate(edge_switches):
+				for host_id in range(2, num_hosts_per_edge + 2):
+					host = Node('10.{}.{}.{}'.format(pod, s, host_id), 'host')
+					self.servers.append(host)
+					edge.add_edge(host)

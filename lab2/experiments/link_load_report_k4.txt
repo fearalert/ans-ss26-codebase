@@ -1,0 +1,62 @@
+Routing comparison: SP vs two-level (fat-tree) routing, k=4
+======================================================================
+
+Hosts: 16, ordered host pairs (flows): 240
+Unreachable / path-tracing errors: 0
+
+Path length (switch-to-switch hops) per flow:
+  SP: min=0 max=4 avg=3.47
+  FT: min=0 max=4 avg=3.47
+  Flows where SP and FT path lengths differ: 0
+  (Both schemes implement shortest-path routing in a fat-tree, so path
+   *lengths* should be identical; they differ only in *which* of the
+   multiple equal-cost shortest paths is selected for each flow.)
+
+Per-link load (number of flows out of 240 using that directed link):
+
+Aggregation -> Core uplinks (16 links, 2 per agg switch):
+  SP: total=192 avg=12.00 min=0 max=48 std=20.78 idle_links=12/16
+  FT: total=192 avg=12.00 min=0 max=24 std=12.00 idle_links=8/16
+
+    10.0.2.1 (dpid 7) port 1 -> 10.4.1.1 : SP= 48  FT= 24
+    10.0.2.1 (dpid 7) port 2 -> 10.4.2.1 : SP=  0  FT=  0
+    10.0.3.1 (dpid 8) port 1 -> 10.4.1.2 : SP=  0  FT=  0
+    10.0.3.1 (dpid 8) port 2 -> 10.4.2.2 : SP=  0  FT= 24
+    10.1.2.1 (dpid 11) port 1 -> 10.4.1.1 : SP= 48  FT= 24
+    10.1.2.1 (dpid 11) port 2 -> 10.4.2.1 : SP=  0  FT=  0
+    10.1.3.1 (dpid 12) port 1 -> 10.4.1.2 : SP=  0  FT=  0
+    10.1.3.1 (dpid 12) port 2 -> 10.4.2.2 : SP=  0  FT= 24
+    10.2.2.1 (dpid 15) port 1 -> 10.4.1.1 : SP= 48  FT= 24
+    10.2.2.1 (dpid 15) port 2 -> 10.4.2.1 : SP=  0  FT=  0
+    10.2.3.1 (dpid 16) port 1 -> 10.4.1.2 : SP=  0  FT=  0
+    10.2.3.1 (dpid 16) port 2 -> 10.4.2.2 : SP=  0  FT= 24
+    10.3.2.1 (dpid 19) port 1 -> 10.4.1.1 : SP= 48  FT= 24
+    10.3.2.1 (dpid 19) port 2 -> 10.4.2.1 : SP=  0  FT=  0
+    10.3.3.1 (dpid 20) port 1 -> 10.4.1.2 : SP=  0  FT=  0
+    10.3.3.1 (dpid 20) port 2 -> 10.4.2.2 : SP=  0  FT= 24
+
+Edge -> Aggregation uplinks (16 links, 2 per edge switch):
+  SP: total=224 avg=14.00 min=0 max=28 std=14.00 idle_links=8/16
+  FT: total=224 avg=14.00 min=14 max=14 std=0.00 idle_links=0/16
+
+    10.0.0.1 (dpid 5) port 1 -> 10.0.2.1 : SP= 28  FT= 14
+    10.0.0.1 (dpid 5) port 2 -> 10.0.3.1 : SP=  0  FT= 14
+    10.0.1.1 (dpid 6) port 1 -> 10.0.2.1 : SP= 28  FT= 14
+    10.0.1.1 (dpid 6) port 2 -> 10.0.3.1 : SP=  0  FT= 14
+    10.1.0.1 (dpid 9) port 1 -> 10.1.2.1 : SP= 28  FT= 14
+    10.1.0.1 (dpid 9) port 2 -> 10.1.3.1 : SP=  0  FT= 14
+    10.1.1.1 (dpid 10) port 1 -> 10.1.2.1 : SP= 28  FT= 14
+    10.1.1.1 (dpid 10) port 2 -> 10.1.3.1 : SP=  0  FT= 14
+    10.2.0.1 (dpid 13) port 1 -> 10.2.2.1 : SP= 28  FT= 14
+    10.2.0.1 (dpid 13) port 2 -> 10.2.3.1 : SP=  0  FT= 14
+    10.2.1.1 (dpid 14) port 1 -> 10.2.2.1 : SP= 28  FT= 14
+    10.2.1.1 (dpid 14) port 2 -> 10.2.3.1 : SP=  0  FT= 14
+    10.3.0.1 (dpid 17) port 1 -> 10.3.2.1 : SP= 28  FT= 14
+    10.3.0.1 (dpid 17) port 2 -> 10.3.3.1 : SP=  0  FT= 14
+    10.3.1.1 (dpid 18) port 1 -> 10.3.2.1 : SP= 28  FT= 14
+    10.3.1.1 (dpid 18) port 2 -> 10.3.3.1 : SP=  0  FT= 14
+
+Distinct core switches carrying >=1 flow: SP=1/4  FT=2/4
+  SP uses core switches: [1]
+  FT uses core switches: [1, 4]
+

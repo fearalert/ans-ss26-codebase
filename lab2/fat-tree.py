@@ -47,7 +47,39 @@ class FattreeNet(Topo):
 
         Topo.__init__(self)
 
-        # TODO: please complete the network generation logic here
+        # Map graph nodes (from topo.Fattree) to Mininet node names.
+        # Switches are named s1..sN in the same order as ft_topo.switches,
+        # so that the dpid Mininet derives from the name ("sN" -> N)
+        # corresponds to the index (1-based) of the switch in ft_topo.switches.
+        # This lets the controller recover the addressing (and hence the
+        # role/position) of every switch from its dpid alone.
+        node_to_name = {}
+
+        for i, switch in enumerate(ft_topo.switches):
+            name = 's{}'.format(i + 1)
+            self.addSwitch(name, cls=OVSKernelSwitch, protocols='OpenFlow13')
+            node_to_name[switch] = name
+
+        # Hosts get the IP address dictated by the fat-tree addressing
+        # scheme (10.pod.switch.id), with a /8 mask so that every host
+        # appears to be on the same (flat) subnet and always ARPs
+        # directly for the destination host.
+        for i, host in enumerate(ft_topo.servers):
+            name = 'h{}'.format(i + 1)
+            self.addHost(name, ip='{}/8'.format(host.id))
+            node_to_name[host] = name
+
+        # Add links. Every Edge object is referenced from both endpoints'
+        # edge lists, so deduplicate on the Edge object's identity.
+        seen_edges = set()
+        for node in ft_topo.switches + ft_topo.servers:
+            for edge in node.edges:
+                if id(edge) in seen_edges:
+                    continue
+                seen_edges.add(id(edge))
+                name1 = node_to_name[edge.lnode]
+                name2 = node_to_name[edge.rnode]
+                self.addLink(name1, name2, cls=TCLink, bw=15, delay='5ms')
 
 
 def make_mininet_instance(graph_topo):
