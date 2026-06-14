@@ -52,6 +52,22 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CODE_DIR = os.path.dirname(HERE)
 sys.path.insert(0, CODE_DIR)
 
+# mininet/cli.py does `from select import poll, POLLIN` at module level.
+# `select.poll` is Linux-only; some systems (macOS, certain Python builds)
+# don't provide it. Since perf_compare.py never invokes the Mininet CLI,
+# a no-op stub is enough to let the import succeed.
+import select as _sel
+if not hasattr(_sel, 'poll'):
+    class _PollStub:
+        def __init__(self): pass
+        def register(self, fd, events=0): pass
+        def unregister(self, fd): pass
+        def poll(self, timeout=None): return []
+    _sel.poll = _PollStub
+    if not hasattr(_sel, 'POLLIN'):
+        _sel.POLLIN = 1
+del _sel
+
 from mininet.net import Mininet
 from mininet.node import RemoteController
 from mininet.link import TCLink
@@ -103,7 +119,8 @@ def run_experiment(controller_key, seconds=10):
 
     log_path = os.path.join(HERE, 'ryu_{}.log'.format(controller_key))
     log_f = open(log_path, 'w')
-    ryu_bin = os.path.join(CODE_DIR, '.venv', 'bin', 'ryu-manager')
+    ryu_bin_venv = os.path.join(CODE_DIR, '.venv', 'bin', 'ryu-manager')
+    ryu_bin = ryu_bin_venv if os.path.exists(ryu_bin_venv) else 'ryu-manager'
     ryu = subprocess.Popen(
         [ryu_bin, '--observe-links', controller_file],
         cwd=CODE_DIR, stdout=log_f, stderr=subprocess.STDOUT)

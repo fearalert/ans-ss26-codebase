@@ -41,10 +41,13 @@ def main():
 
     print("Ping loss: SP={}%  FT={}%".format(sp['ping_loss_pct'], ft['ping_loss_pct']))
 
+    def _none_to_zero(vals):
+        return [v if v is not None else 0.0 for v in vals]
+
     # --- Single-flow throughput ---
     labels = list(sp['single_flow'].keys())
-    sp_vals = [sp['single_flow'][l]['client_mbps'] for l in labels]
-    ft_vals = [ft['single_flow'][l]['client_mbps'] for l in labels]
+    sp_vals = _none_to_zero([sp['single_flow'][l]['client_mbps'] for l in labels])
+    ft_vals = _none_to_zero([ft['single_flow'][l]['client_mbps'] for l in labels])
 
     x = range(len(labels))
     width = 0.35
@@ -70,9 +73,9 @@ def main():
 
     pair_labels = sp_conc['pairs']
     x = range(len(pair_labels))
-    axes[0].bar([i - width / 2 for i in x], sp_conc['per_flow_mbps'], width,
+    axes[0].bar([i - width / 2 for i in x], _none_to_zero(sp_conc['per_flow_mbps']), width,
                  label='SP routing', color='tab:blue')
-    axes[0].bar([i + width / 2 for i in x], ft_conc['per_flow_mbps'], width,
+    axes[0].bar([i + width / 2 for i in x], _none_to_zero(ft_conc['per_flow_mbps']), width,
                  label='Two-level routing', color='tab:orange')
     axes[0].set_xticks(list(x))
     axes[0].set_xticklabels(pair_labels)
@@ -81,7 +84,7 @@ def main():
     axes[0].legend()
 
     axes[1].bar(['SP', 'Two-level'],
-                 [sp_conc['aggregate_mbps'], ft_conc['aggregate_mbps']],
+                 [sp_conc['aggregate_mbps'] or 0.0, ft_conc['aggregate_mbps'] or 0.0],
                  color=['tab:blue', 'tab:orange'])
     axes[1].set_ylabel('Aggregate throughput (Mbit/s)')
     axes[1].set_title('Aggregate throughput\n(2 concurrent inter-pod flows)')
